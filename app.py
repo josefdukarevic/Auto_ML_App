@@ -4,8 +4,8 @@ import os
 
 import pandas_profiling 
 from streamlit_pandas_profiling import st_profile_report
-from pycaret.regression import setup, compare_models, pull, save_model, load_model
-from pycaret.classification import setup, compare_models, pull, save_model, load_model
+from pycaret import regression
+from pycaret import classification
 
 with st.sidebar:
     st.image("https://www.atriainnovation.com/wp-content/uploads/2021/02/portada.jpg")
@@ -36,31 +36,32 @@ if choice == "Machine-Learning":
         st.title("Perform Regression")
         target = st.selectbox("Select the target variable", df.columns)
         if st.button("Perform Machine Learning training"):
-            setup(df, target=target, fold_shuffle=True, data_split_shuffle=True)
-            setup_df = pull()
+            regression.setup(df, target=target, fold_shuffle=True, data_split_shuffle=True)
+            setup_df = regression.pull()
             st.info("These are the Machine Learning Experiment Settings")
             st.dataframe(setup_df)
-            best_model = compare_models()
-            compare_df = pull()
+            best_model = regression.compare_models()
+            compare_df = regression.pull()
             st.info("These are the best trained Models on the Dataset")
             st.dataframe(compare_df)
             best_model
-            save_model(best_model, "best_model")
+            regression.save_model(best_model, "best_model")
     if new_choice == "Classification":
         st.title("Perform Classification")
         target = st.selectbox("Select the target variable", df.columns)
         if st.button("Perform Machine Learning Training"):
-            setup(df, target=target, fold_shuffle=True, data_split_shuffle=True)
-            setup_df = pull()
+            classification.setup(df, target=target, fold_shuffle=True, data_split_shuffle=True)
+            setup_df = classification.pull()
             st.info("These are the Machine Learning Experiment Settings")
             st.dataframe(setup_df)
-            best_model = compare_models()
-            compare_df = pull()
+            best_model = classification.compare_models()
+            compare_df = classification.pull()
             st.info("These are the best trained Models on the Dataset")
             st.dataframe(compare_df)
             best_model
-            save_model(best_model, "best_model")
+            classification.save_model(best_model, "best_model")
 
 
 if choice == "Download":
-    pass
+    with open("best_model.pkl", "rb") as f:
+        st.download_button("Download the Model", f, "trained_model.pkl")
